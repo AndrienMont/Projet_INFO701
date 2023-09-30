@@ -1,22 +1,30 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
 
 void main() {
   runApp(const MyApp());
 }
 
 class User {
+  final String id;
   final String nom;
   final String prenom;
   final String filiere;
 
-  const User({required this.nom, required this.prenom, required this.filiere});
+  const User(
+      {required this.id,
+      required this.nom,
+      required this.prenom,
+      required this.filiere});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        nom: json['nom'], prenom: json['prenom'], filiere: json['filiere']);
+        id: json["_id"],
+        nom: json['nom'],
+        prenom: json['prenom'],
+        filiere: json['filiere']);
   }
 }
 
@@ -48,12 +56,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<User> getUsers() async {
-    final response =
-        await http.get(Uri.parse("http://10.7.144.78:3000/api/users"));
+  List<User> usersList = [];
 
+  Future<void> getUsers() async {
+    final response =
+        await http.get(Uri.parse("http://192.168.1.7:3000/api/users"));
+
+    developer.log(response.body);
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body));
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      final List<User> users = jsonList.map((e) => User.fromJson(e)).toList();
+      setState(() {
+        usersList = users;
+      });
     } else {
       throw Exception("Erreur lors de la récupération des utilisateurs");
     }
@@ -70,14 +85,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Liste des utilisateurs:',
-            ),
             ElevatedButton(
                 onPressed: () {
                   getUsers();
                 },
-                child: const Text("Récupérer la liste des utilisateurs"))
+                child: const Text("Récupérer la liste des utilisateurs")),
+            const Text(
+              'Liste des utilisateurs:',
+            ),
+            Expanded(
+                child: usersList.isEmpty
+                    ? const Text("Aucun utilisateur")
+                    : ListView.builder(
+                        itemCount: usersList.length,
+                        itemBuilder: (context, index) {
+                          final user = usersList[index];
+                          return ListTile(
+                            title: Text(user.nom),
+                            subtitle: Text(user.prenom),
+                            trailing: Text(user.filiere),
+                          );
+                        },
+                      )),
           ],
         ),
       ),
