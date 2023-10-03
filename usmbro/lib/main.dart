@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 
+import 'package:usmbro/map.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -60,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> getUsers() async {
     final response =
-        await http.get(Uri.parse("http://192.168.1.7:3000/api/users"));
+        await http.get(Uri.parse("http://192.168.72.22:3000/api/users"));
 
     developer.log(response.body);
     if (response.statusCode == 200) {
@@ -107,6 +109,26 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         },
                       )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () {}, child: const Text("GET users")),
+                ElevatedButton(
+                    onPressed: () {}, child: const Text("POST users")),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const MapUsers(title: "Map Users");
+                      }));
+                    },
+                    child: const Text("MAP")),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
