@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 
 import 'package:usmbro/map.dart';
+import 'package:usmbro/post_users.dart';
 
 void main() {
   runApp(const MyApp());
@@ -115,7 +116,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(
                     onPressed: () {}, child: const Text("GET users")),
                 ElevatedButton(
-                    onPressed: () {}, child: const Text("POST users")),
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const PostUsers(title: "POST users");
+                      }));
+                    },
+                    child: const Text("POST users")),
                 ElevatedButton(
                     onPressed: () {
                       Navigator.push(context,
