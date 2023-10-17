@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 
 import 'package:usmbro/map.dart';
 import 'package:usmbro/post_users.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,19 +16,22 @@ class User {
   final String nom;
   final String prenom;
   final String filiere;
+  final String token;
 
   const User(
       {required this.id,
       required this.nom,
       required this.prenom,
-      required this.filiere});
+      required this.filiere,
+      required this.token});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
         id: json["_id"],
         nom: json['nom'],
         prenom: json['prenom'],
-        filiere: json['filiere']);
+        filiere: json['filiere'],
+        token: json['token']);
   }
 }
 

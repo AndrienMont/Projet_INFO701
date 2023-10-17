@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:usmbro/main.dart';
 import 'package:usmbro/map.dart';
+import 'package:uuid/uuid.dart';
 
 class PostUsers extends StatefulWidget {
   const PostUsers({super.key, required this.title});
@@ -18,18 +19,23 @@ class User {
   final String nom;
   final String prenom;
   final String filiere;
+  final String token;
 
-  const User({required this.nom, required this.prenom, required this.filiere});
+  const User(
+      {required this.nom,
+      required this.prenom,
+      required this.filiere,
+      required this.token});
 
-  Map<String, dynamic> toJson() => {
-        'nom': nom,
-        'prenom': prenom,
-        'filiere': filiere,
-      };
+  Map<String, dynamic> toJson() =>
+      {'nom': nom, 'prenom': prenom, 'filiere': filiere, 'token': token};
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        nom: json['nom'], prenom: json['prenom'], filiere: json['filiere']);
+        nom: json['nom'],
+        prenom: json['prenom'],
+        filiere: json['filiere'],
+        token: json['token']);
   }
 }
 
@@ -59,7 +65,8 @@ class _PostUsersState extends State<PostUsers> {
       body: jsonEncode(User(
           nom: nom.toUpperCase(),
           prenom: prenom,
-          filiere: filiere.toUpperCase())),
+          filiere: filiere.toUpperCase(),
+          token: const Uuid().v4())),
     );
     if (response.statusCode == 201) {
       // If the server did return a 201 CREATED response,
