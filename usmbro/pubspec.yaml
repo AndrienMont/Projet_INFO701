@@ -8,9 +8,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.2
   http: ^1.1.0
   provider: ^5.0.0
+  flutter_osm_plugin: ^0.60.5
 
 dev_dependencies:
   flutter_test:
