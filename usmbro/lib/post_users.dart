@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usmbro/main.dart';
 import 'package:usmbro/map.dart';
 import 'package:uuid/uuid.dart';
@@ -56,7 +57,15 @@ class _PostUsersState extends State<PostUsers> {
     super.dispose();
   }
 
+  void _storeUuid(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setString('uuid', token);
+    });
+  }
+
   Future<void> createUser(String nom, String prenom, String filiere) async {
+    String token = const Uuid().v4();
     final response = await http.post(
       Uri.parse("http://192.168.72.22:3000/api/users/"),
       headers: <String, String>{
@@ -66,8 +75,9 @@ class _PostUsersState extends State<PostUsers> {
           nom: nom.toUpperCase(),
           prenom: prenom,
           filiere: filiere.toUpperCase(),
-          token: const Uuid().v4())),
+          token: token)),
     );
+    _storeUuid(token);
     if (response.statusCode == 201) {
       // If the server did return a 201 CREATED response,
       // then parse the JSON.
