@@ -5,7 +5,6 @@ import 'dart:developer' as developer;
 
 import 'package:usmbro/map.dart';
 import 'package:usmbro/post_users.dart';
-import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(const MyApp());
