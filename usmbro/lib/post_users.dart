@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usmbro/main.dart';
 import 'package:usmbro/get_users.dart';
 import 'package:usmbro/map.dart';
+import 'package:usmbro/notifications.dart';
 import 'package:uuid/uuid.dart';
 
 class PostUsers extends StatefulWidget {
@@ -91,123 +92,135 @@ class _PostUsersState extends State<PostUsers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 100,
-                          child: TextField(
-                            controller: _controllerNom,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Nom',
-                            ),
-                            onSubmitted: (value) => nomPost = value,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                children: [
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        child: TextField(
+                          controller: _controllerNom,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Nom',
                           ),
+                          onSubmitted: (value) => nomPost = value,
                         ),
-                        const SizedBox(width: 15),
-                        SizedBox(
-                          width: 100,
-                          child: TextField(
-                            controller: _controllerPrenom,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Prénom',
-                            ),
-                            onSubmitted: (value) => prenomPost = value,
+                      ),
+                      const SizedBox(width: 15),
+                      SizedBox(
+                        width: 100,
+                        child: TextField(
+                          controller: _controllerPrenom,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Prénom',
                           ),
+                          onSubmitted: (value) => prenomPost = value,
                         ),
-                        const SizedBox(width: 15),
-                        SizedBox(
-                          width: 100,
-                          child: TextField(
-                            controller: _controllerFiliere,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Filière',
-                            ),
-                            onSubmitted: (value) => filierePost = value,
+                      ),
+                      const SizedBox(width: 15),
+                      SizedBox(
+                        width: 100,
+                        child: TextField(
+                          controller: _controllerFiliere,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Filière',
                           ),
+                          onSubmitted: (value) => filierePost = value,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            createUser(
-                                _controllerNom.text,
-                                _controllerPrenom.text,
-                                _controllerFiliere.text);
-                          });
-                        },
-                        child: const Text("Send to server")),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: (id) {
-            if(id==0){
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MapUsers(title: 'USMBRO home page'),
-                  allowSnapshotting: false,
+                      ),
+                    ],
                   ),
-              );
-            }else if(id==1){
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const GetUsers(title: 'USMBRO Get Page'),
-                  allowSnapshotting: false,
-                ),
-              );
-            }else{
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PostUsers(title: 'USMBRO Post Page'),
-                  allowSnapshotting: false,
-                ),
-              );
-            }
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Map',
-
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Users',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.post_add),
-              label: 'Post',
-
+                  const SizedBox(height: 15),
+                  ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          createUser(_controllerNom.text,
+                              _controllerPrenom.text, _controllerFiliere.text);
+                        });
+                      },
+                      child: const Text("Send to server")),
+                ],
+              ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        // backgroundColor: Colors.black,
+        onTap: (id) {
+          if (id == 0) {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const MapUsers(title: 'USMBRO home page'),
+                  allowSnapshotting: false,
+                ));
+          } else if (id == 1) {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const GetUsers(title: 'USMBRO Get Page'),
+                allowSnapshotting: false,
+              ),
+            );
+          } else if (id == 2) {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const PostUsers(title: 'USMBRO Post Page'),
+                allowSnapshotting: false,
+              ),
+            );
+          } else {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const Notifications(title: 'USMBRO Notifications Page'),
+                allowSnapshotting: false,
+              ),
+            );
+          }
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map, color: Colors.black),
+            label: 'Map',
           ),
-        );
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Users',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.post_add, color: Colors.black),
+            label: 'Post',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications, color: Colors.black),
+            label: 'Notifications',
+          ),
+        ],
+      ),
+    );
   }
 }

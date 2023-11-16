@@ -1,13 +1,12 @@
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:usmbro/map.dart';
+import 'package:usmbro/notifications.dart';
 import 'package:usmbro/user.dart';
 
 import 'post_users.dart';
-
 
 class GetUsers extends StatefulWidget {
   const GetUsers({super.key, required this.title});
@@ -18,7 +17,7 @@ class GetUsers extends StatefulWidget {
   State<GetUsers> createState() => _GetUsers();
 }
 
-class _GetUsers extends State<GetUsers>{
+class _GetUsers extends State<GetUsers> {
   List<User> usersList = [];
   Future<void> getUsers() async {
     final response =
@@ -35,7 +34,7 @@ class _GetUsers extends State<GetUsers>{
     }
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -98,51 +97,66 @@ class _GetUsers extends State<GetUsers>{
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-      onTap: (id) {
-        if(id==0){
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MapUsers(title: 'USMBRO home page'),
-              allowSnapshotting: false,
-            )
+        // backgroundColor: Colors.black,
+        onTap: (id) {
+          if (id == 0) {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const MapUsers(title: 'USMBRO home page'),
+                  allowSnapshotting: false,
+                ));
+          } else if (id == 1) {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const GetUsers(title: 'USMBRO Get Page'),
+                allowSnapshotting: false,
+              ),
             );
-        }else if(id==1){
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const GetUsers(title: 'USMBRO Get Page'),
-              allowSnapshotting: false,
-            ),
-          );
-        }else{
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PostUsers(title: 'USMBRO Post Page'),
-            allowSnapshotting: false,
+          } else if (id == 2) {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const PostUsers(title: 'USMBRO Post Page'),
+                allowSnapshotting: false,
+              ),
+            );
+          } else {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const Notifications(title: 'USMBRO Notifications Page'),
+                allowSnapshotting: false,
+              ),
+            );
+          }
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map, color: Colors.black),
+            label: 'Map',
           ),
-          );
-        }
-      },
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: 'Map',
-
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Users',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.post_add),
-          label: 'Post',
-
-        ),
-      ],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black),
+            label: 'Users',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.post_add, color: Colors.black),
+            label: 'Post',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications, color: Colors.black),
+            label: 'Notifications',
+          ),
+        ],
       ),
     );
   }
