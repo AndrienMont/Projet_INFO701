@@ -23,7 +23,7 @@ class UserPost {
   final String filiere;
   final String token;
 
-  const User(
+  const UserPost(
       {required this.nom,
       required this.prenom,
       required this.filiere,
@@ -32,8 +32,8 @@ class UserPost {
   Map<String, dynamic> toJson() =>
       {'nom': nom, 'prenom': prenom, 'filiere': filiere, 'token': token};
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserPost.fromJson(Map<String, dynamic> json) {
+    return UserPost(
         nom: json['nom'],
         prenom: json['prenom'],
         filiere: json['filiere'],

@@ -16,7 +16,7 @@ OSMFlutter afficheMap() {
                     stepZoom: 1.0,
               ),
               userLocationMarker: UserLocationMaker(
-                  personMarker: const MarkerIcon(
+                  personMarker:  const MarkerIcon(
                       icon: Icon(
                           Icons.location_history_rounded,
                           color: Colors.red,
