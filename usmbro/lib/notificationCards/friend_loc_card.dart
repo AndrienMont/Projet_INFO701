@@ -7,7 +7,7 @@ Card newFriendLocCard(String user) {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
-          leading: const Icon(Icons.person),
+          leading: const Icon(Icons.map),
           title: const Text('Demande de localisation'),
           subtitle: Text('$name a demandé à vous localiser'),
         ),
