@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usmbro/main.dart';
+import 'package:usmbro/get_users.dart';
 import 'package:usmbro/map.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,7 +17,7 @@ class PostUsers extends StatefulWidget {
   State<PostUsers> createState() => _PostUsersState();
 }
 
-class User {
+class UserPost {
   final String nom;
   final String prenom;
   final String filiere;
@@ -71,7 +72,7 @@ class _PostUsersState extends State<PostUsers> {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(User(
+      body: jsonEncode(UserPost(
           nom: nom.toUpperCase(),
           prenom: prenom,
           filiere: filiere.toUpperCase(),
@@ -156,34 +157,57 @@ class _PostUsersState extends State<PostUsers> {
                   ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const MyHomePage(title: "USMBRO Home Page");
-                        }));
-                      },
-                      child: const Text("GET users")),
-                  ElevatedButton(
-                      onPressed: () {}, child: const Text("POST users")),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const MapUsers(title: "Map Users");
-                        }));
-                      },
-                      child: const Text("MAP")),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
             ],
           ),
-        ));
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (id) {
+            if(id==0){
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MapUsers(title: 'USMBRO home page'),
+                  allowSnapshotting: false,
+                  ),
+              );
+            }else if(id==1){
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GetUsers(title: 'USMBRO Get Page'),
+                  allowSnapshotting: false,
+                ),
+              );
+            }else{
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PostUsers(title: 'USMBRO Post Page'),
+                  allowSnapshotting: false,
+                ),
+              );
+            }
+          },
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.map),
+              label: 'Map',
+
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Users',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.post_add),
+              label: 'Post',
+
+            ),
+          ],
+          ),
+        );
   }
 }
