@@ -5,7 +5,7 @@ import 'package:usmbro/map.dart';
 import 'package:usmbro/notificationCards/friend_loc_card.dart';
 import 'package:usmbro/notificationCards/friend_request_card.dart';
 import 'package:usmbro/post_users.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 import 'package:flutter/material.dart';
 
@@ -19,8 +19,55 @@ class Notifications extends StatefulWidget {
 }
 
 class _NotificationsState extends State<Notifications> {
-  final channel =
-      WebSocketChannel.connect(Uri.parse("ws://192.168.72.22:3000"));
+  late Socket socket;
+
+  @override
+  void initState() {
+    super.initState();
+    setSocket();
+  }
+
+  void setSocket() {
+    try {
+      print('hello');
+      // Socket socket = io(
+      //     'http://192.168.33.22:3000',
+      //     OptionBuilder()
+      //         .setTransports(['websocket'])
+      //         .disableAutoConnect()
+      //         .enableForceNew()
+      //         .build());
+      socket = io('http://192.168.33.22:8080', <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': false,
+        'forceNew': true,
+      });
+      socket.connect();
+      print(socket.connected);
+      socket.on('connection', (_) {
+        print('connecté');
+      });
+      print("là");
+
+      print("emit");
+      socket.on('connect_timeout', (_) => print('connect_timeout'));
+      socket.onError(
+        (data) => print(data),
+      );
+      print('fini');
+      // socket.disconnect();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void sendTest() {
+    socket.emit('salut', 'c\' est un test');
+  }
+
+  void deco() {
+    socket.disconnect();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +82,10 @@ class _NotificationsState extends State<Notifications> {
           children: [
             newFriendLocCard("test"),
             newFriendReqCard("test"),
+            ElevatedButton(
+                onPressed: setSocket, child: const Text("Connexion")),
+            ElevatedButton(onPressed: sendTest, child: const Text("test")),
+            ElevatedButton(onPressed: deco, child: const Text("Deconnexion")),
           ],
         ),
       ),
