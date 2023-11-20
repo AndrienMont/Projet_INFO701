@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:usmbro/dataBaseHelper.dart';
 import 'package:usmbro/map.dart';
 import 'package:usmbro/user.dart';
 
@@ -19,10 +21,38 @@ class GetUsers extends StatefulWidget {
 }
 
 class _GetUsers extends State<GetUsers>{
+   late SharedPreferences _prefs;
   List<User> usersList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserStatus();
+  }
+
+  Future<void> _loadUserStatus() async {
+  _prefs = await SharedPreferences.getInstance();
+  setState(() {
+    // Mettez à jour l'état pour refléter si l'utilisateur a déjà été ajouté.
+    usersList.forEach((user) {
+      user.alreadyAdded = _prefs.getBool('userAlreadyAdded${user.id}') ?? false;
+      print("User already added: ${user.alreadyAdded}");
+      });
+    });
+  }
+
+  Future<void> _saveUserStatus(User user, bool value) async {
+    await _prefs.setBool('userAlreadyAdded${user.id}', value);
+    setState(() {
+      // Mettez à jour l'état pour refléter si l'utilisateur a déjà été ajouté.
+      user.alreadyAdded = value;
+    });
+  }
+  
+
   Future<void> getUsers() async {
     final response =
-        await http.get(Uri.parse("http://192.168.72.22:3000/api/users"));
+        await http.get(Uri.parse("http://192.168.156.7:3000/api/users"));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -58,39 +88,46 @@ class _GetUsers extends State<GetUsers>{
                 child: usersList.isEmpty
                     ? const Text("Aucun utilisateur")
                     : ListView.builder(
-                        itemCount: usersList.length,
-                        itemBuilder: (context, index) {
-                          final user = usersList[index];
-                          return ListTile(
-                            title: Text(user.nom),
-                            subtitle: Text(user.prenom),
-                            trailing: Text(user.filiere),
-                          );
-                        },
-                      )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    onPressed: () {}, child: const Text("GET users")),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const PostUsers(title: "POST users");
-                      }));
-                    },
-                    child: const Text("POST users")),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const MapUsers(title: "Map Users");
-                      }));
-                    },
-                    child: const Text("MAP")),
-              ],
-            ),
+                      itemCount: usersList.length,
+                      itemBuilder: (context, index) {
+                        final user = usersList[index];
+                        bool userAlreadyAdded = _prefs.getBool('userAlreadyAdded${user.id}') ?? false;
+
+                        return ListTile(
+                          title: Text(user.nom),
+                          subtitle: Text(user.prenom),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(user.filiere),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.person_add,
+                                  color: userAlreadyAdded ? Colors.grey : Colors.green,
+                                ),
+                                onPressed: user.alreadyAdded
+                                    ? null
+                                    : () {
+                                        User userBdd = User(
+                                          id: user.id,
+                                          nom: user.nom,
+                                          prenom: user.prenom,
+                                          filiere: user.filiere,
+                                          token: user.token,
+                                          alreadyAdded: true,
+                                        );
+                                        // Enregistrez l'utilisateur dans la base de données.
+                                        DatabaseHelper.insertUser(userBdd);
+                                        print("User added");
+                                        // Mettez à jour les préférences partagées pour refléter que l'utilisateur est ajouté.
+                                        _saveUserStatus(userBdd, true);;
+                                      },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),),
             const SizedBox(
               height: 20,
             ),

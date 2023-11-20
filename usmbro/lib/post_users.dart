@@ -15,6 +15,7 @@ class PostUsers extends StatefulWidget {
 
   @override
   State<PostUsers> createState() => _PostUsersState();
+  
 }
 
 class UserPost {
@@ -68,7 +69,7 @@ class _PostUsersState extends State<PostUsers> {
   Future<void> createUser(String nom, String prenom, String filiere) async {
     String token = const Uuid().v4();
     final response = await http.post(
-      Uri.parse("http://192.168.72.22:3000/api/users/"),
+      Uri.parse("http://192.168.156.7:3000/api/users/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
