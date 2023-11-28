@@ -68,7 +68,6 @@ class _MapUsersState extends State<MapUsers> {
         BottomNavigationBarItem(
           icon: Icon(Icons.map),
           label: 'Map',
-
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),

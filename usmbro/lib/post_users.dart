@@ -66,10 +66,17 @@ class _PostUsersState extends State<PostUsers> {
     });
   }
 
+  // void _userAdded(bool add) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     prefs.setBool('userAdded', add);
+  //   });
+  // }
+
   Future<void> createUser(String nom, String prenom, String filiere) async {
     String token = const Uuid().v4();
     final response = await http.post(
-      Uri.parse("http://192.168.156.7:3000/api/users/"),
+      Uri.parse("http://10.7.148.83:3000/api/users/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -146,13 +153,14 @@ class _PostUsersState extends State<PostUsers> {
                     ),
                     const SizedBox(height: 15),
                     ElevatedButton(
-                        onPressed: () {
+                        onPressed:  () {
                           setState(() {
                             createUser(
                                 _controllerNom.text,
                                 _controllerPrenom.text,
                                 _controllerFiliere.text);
                           });
+                          // _userAdded(true);
                         },
                         child: const Text("Send to server")),
                   ],

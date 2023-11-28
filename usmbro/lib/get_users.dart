@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usmbro/dataBaseHelper.dart';
 import 'package:usmbro/map.dart';
+import 'package:usmbro/mapController/control_map.dart';
 import 'package:usmbro/user.dart';
 
 import 'post_users.dart';
@@ -52,7 +53,7 @@ class _GetUsers extends State<GetUsers>{
 
   Future<void> getUsers() async {
     final response =
-        await http.get(Uri.parse("http://192.168.156.7:3000/api/users"));
+        await http.get(Uri.parse("http://10.7.148.83:3000/api/users"));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -78,7 +79,8 @@ class _GetUsers extends State<GetUsers>{
           children: <Widget>[
             ElevatedButton(
                 onPressed: () {
-                  getUsers();
+                  //getUsers();
+                  print(controlMap().initPosition.toString());
                 },
                 child: const Text("Récupérer la liste des utilisateurs")),
             const Text(
@@ -120,8 +122,15 @@ class _GetUsers extends State<GetUsers>{
                                         DatabaseHelper.insertUser(userBdd);
                                         print("User added");
                                         // Mettez à jour les préférences partagées pour refléter que l'utilisateur est ajouté.
-                                        _saveUserStatus(userBdd, true);;
+                                        _saveUserStatus(userBdd, true);
                                       },
+                              ),
+
+                              IconButton(
+                                icon : Icon(
+                                  userAlreadyAdded ? Icons.location_on : Icons.location_off,
+                                  color: userAlreadyAdded ? Colors.red : Colors.grey,
+                                ), onPressed: () {},
                               ),
                             ],
                           ),
