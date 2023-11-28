@@ -1,11 +1,11 @@
-import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usmbro/get_users.dart';
 import 'package:usmbro/map.dart';
 import 'package:usmbro/notificationCards/friend_loc_card.dart';
 import 'package:usmbro/notificationCards/friend_request_card.dart';
 import 'package:usmbro/post_users.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:flutter/material.dart';
 
@@ -20,42 +20,45 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   late Socket socket;
+  String token = "";
+
+  void getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? tokenU = prefs.getString('uuid');
+    token = tokenU!;
+    print(token);
+  }
+
+  void getLoc() async {
+    var location = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    print(location);
+  }
 
   @override
   void initState() {
     super.initState();
+    // printLoc();
+    getLoc();
+    getToken();
     setSocket();
   }
 
   void setSocket() {
     try {
-      print('hello');
-      // Socket socket = io(
-      //     'http://192.168.33.22:3000',
-      //     OptionBuilder()
-      //         .setTransports(['websocket'])
-      //         .disableAutoConnect()
-      //         .enableForceNew()
-      //         .build());
       socket = io('http://192.168.33.22:8080', <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
         'forceNew': true,
       });
       socket.connect();
-      print(socket.connected);
       socket.on('connection', (_) {
         print('connecté');
       });
-      print("là");
-
-      print("emit");
       socket.on('connect_timeout', (_) => print('connect_timeout'));
       socket.onError(
         (data) => print(data),
       );
-      print('fini');
-      // socket.disconnect();
     } catch (e) {
       print(e);
     }

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 import 'package:usmbro/map.dart';
 import 'package:usmbro/notifications.dart';
 import 'package:usmbro/user.dart';
@@ -19,9 +21,11 @@ class GetUsers extends StatefulWidget {
 
 class _GetUsers extends State<GetUsers> {
   List<User> usersList = [];
+  late Socket socket;
+
   Future<void> getUsers() async {
     final response =
-        await http.get(Uri.parse("http://192.168.72.22:3000/api/users"));
+        await http.get(Uri.parse("http://192.168.33.22:3000/api/users"));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -32,6 +36,44 @@ class _GetUsers extends State<GetUsers> {
     } else {
       throw Exception("Erreur lors de la récupération des utilisateurs");
     }
+  }
+
+  void setSocket() {
+    try {
+      socket = io('http://192.168.33.22:8080', <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': false,
+        'forceNew': true,
+      });
+      socket.connect();
+      socket.on('connection', (_) {
+        print('connecté');
+      });
+      socket.on('connect_timeout', (_) => print('connect_timeout'));
+      socket.onError(
+        (data) => print(data),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void reqLoc(String tokenSen, String tokenRec) {
+    var lat = "";
+    var long = "";
+    socket.emit('reqLoc', "$tokenSen $tokenRec");
+    socket.on(tokenSen, (data) {
+      lat = data.split(" ")[0];
+      long = data.split(" ")[1];
+      return GeoPoint(
+          latitude: double.parse(lat), longitude: double.parse(long));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setSocket();
   }
 
   @override

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:usmbro/main.dart';
 import 'package:usmbro/get_users.dart';
 import 'package:usmbro/map.dart';
 import 'package:usmbro/notifications.dart';
@@ -69,7 +68,7 @@ class _PostUsersState extends State<PostUsers> {
   Future<void> createUser(String nom, String prenom, String filiere) async {
     String token = const Uuid().v4();
     final response = await http.post(
-      Uri.parse("http://192.168.72.22:3000/api/users/"),
+      Uri.parse("http://192.168.33.22:3000/api/users/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
