@@ -50,23 +50,19 @@ class _NotificationsState extends State<Notifications> {
   }
 
   void setSocket() {
-    try {
-      socket = io('http://192.168.159.22:8080', <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': false,
-        'forceNew': true,
-      });
-      socket.connect();
-      socket.on('connection', (_) {
-        print('connecté');
-      });
-      socket.on('connect_timeout', (_) => print('connect_timeout'));
-      socket.onError(
-        (data) => print(data),
-      );
-    } catch (e) {
-      print(e);
-    }
+    socket = io('http://192.168.159.22:8080', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+      'forceNew': true,
+    });
+    socket.connect();
+    socket.on('connection', (_) {
+      print('connecté');
+    });
+    socket.on('connect_timeout', (_) => print('connect_timeout'));
+    socket.onError(
+      (data) => print(data),
+    );
   }
 
   void sendTest() {
@@ -77,28 +73,24 @@ class _NotificationsState extends State<Notifications> {
     socket.disconnect();
   }
 
-  Future waitWhile(bool val, [Duration pollInterval = Duration.zero]) {
-    var completer = Completer();
-    check() {
-      if (val) {
-        completer.complete();
-      } else {
-        Timer(pollInterval, check);
-      }
-    }
-
-    check();
-    return completer.future;
-  }
-
   Future<Card?> askLoc() async {
     print("here");
     var nom = "";
     var tokenU = "";
+
+    socket = io('http://192.168.159.22:8080', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+      'forceNew': true,
+    });
+    socket.connect();
+    print(socket.connected);
     var location = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     print(token);
-    socket.on(token, (data) {
+    print(socket.connected);
+    socket.on("salut", (data) {
+      print("here");
       tokenU = data.split(" ")[0];
       print(tokenU);
       nom = data.split(" ")[1];
@@ -106,17 +98,17 @@ class _NotificationsState extends State<Notifications> {
       return newFriendLocCard(nom, location, tokenU);
     });
 
-    bool isReady = false;
-    Timer(const Duration(seconds: 5), () {
-      isReady = true;
+    Timer(const Duration(seconds: 30), () {
       print("finito");
     });
-    await waitWhile(isReady);
-    return newFriendLocCard("test", location, "bacegjkesjg");
   }
 
   @override
   Widget build(BuildContext context) {
+    Future<Card?> ask() async {
+      return await askLoc().timeout(const Duration(seconds: 30));
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -124,12 +116,12 @@ class _NotificationsState extends State<Notifications> {
       ),
       body: Center(
         child: FutureBuilder<Card?>(
-          future: askLoc(),
+          future: ask(),
           builder: (BuildContext context, AsyncSnapshot<Card?> snapshot) {
             if (snapshot.hasData) {
               return snapshot.data!;
             } else if (snapshot.hasError) {
-              return const Text('Error');
+              return Text(snapshot.error.toString());
             } else {
               return const Text("Pas de notifications.");
             }

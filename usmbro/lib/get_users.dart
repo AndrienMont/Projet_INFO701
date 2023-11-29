@@ -117,7 +117,6 @@ class _GetUsers extends State<GetUsers> {
     Timer(const Duration(seconds: 30), () {
       return;
     });
-    while (true) {}
   }
 
   @override
