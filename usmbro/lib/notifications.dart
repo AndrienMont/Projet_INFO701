@@ -79,13 +79,13 @@ class _NotificationsState extends State<Notifications> {
 
   Future<Card?> askLoc() async {
     var nom = "";
-    var token = "";
+    var tokenU = "";
     var location = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     socket.on(token, (data) {
-      token = data.split(" ")[0];
+      tokenU = data.split(" ")[0];
       nom = data.split(" ")[1];
-      return newFriendLocCard(nom, location, token);
+      return newFriendLocCard(nom, location, tokenU);
     });
 
     Timer(const Duration(seconds: 30), () {
