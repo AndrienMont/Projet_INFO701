@@ -51,7 +51,7 @@ class _NotificationsState extends State<Notifications> {
 
   void setSocket() {
     try {
-      socket = io('http://192.168.33.22:8080', <String, dynamic>{
+      socket = io('http://192.168.159.22:8080', <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
         'forceNew': true,
@@ -77,20 +77,42 @@ class _NotificationsState extends State<Notifications> {
     socket.disconnect();
   }
 
+  Future waitWhile(bool val, [Duration pollInterval = Duration.zero]) {
+    var completer = Completer();
+    check() {
+      if (val) {
+        completer.complete();
+      } else {
+        Timer(pollInterval, check);
+      }
+    }
+
+    check();
+    return completer.future;
+  }
+
   Future<Card?> askLoc() async {
+    print("here");
     var nom = "";
     var tokenU = "";
     var location = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+    print(token);
     socket.on(token, (data) {
       tokenU = data.split(" ")[0];
+      print(tokenU);
       nom = data.split(" ")[1];
+      print(nom);
       return newFriendLocCard(nom, location, tokenU);
     });
 
-    Timer(const Duration(seconds: 30), () {
-      return;
+    bool isReady = false;
+    Timer(const Duration(seconds: 5), () {
+      isReady = true;
+      print("finito");
     });
+    await waitWhile(isReady);
+    return newFriendLocCard("test", location, "bacegjkesjg");
   }
 
   @override

@@ -61,7 +61,7 @@ class _GetUsers extends State<GetUsers> {
 
   Future<void> getUsers() async {
     final response =
-        await http.get(Uri.parse("http://192.168.33.22:3000/api/users"));
+        await http.get(Uri.parse("http://192.168.159.22:3000/api/users"));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -76,7 +76,7 @@ class _GetUsers extends State<GetUsers> {
 
   void setSocket() {
     try {
-      socket = io('http://192.168.33.22:8080', <String, dynamic>{
+      socket = io('http://192.168.159.22:8080', <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
         'forceNew': true,
@@ -117,6 +117,7 @@ class _GetUsers extends State<GetUsers> {
     Timer(const Duration(seconds: 30), () {
       return;
     });
+    while (true) {}
   }
 
   @override

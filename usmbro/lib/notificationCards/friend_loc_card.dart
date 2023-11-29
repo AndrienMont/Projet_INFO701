@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 Card newFriendLocCard(String user, Position loc, String token) {
-  Socket socket = io('http://192.168.33.22:8080', <String, dynamic>{
+  Socket socket = io('http://192.168.159.22:8080', <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': false,
     'forceNew': true,
