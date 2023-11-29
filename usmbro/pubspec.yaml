@@ -18,6 +18,7 @@ dependencies:
   flutter_osm_plugin: ^0.60.5
   socket_io_client: ^2.0.3+1
   geolocator: ^10.1.0
+  sqflite: ^2.0.0
 
 dev_dependencies:
   flutter_test:
