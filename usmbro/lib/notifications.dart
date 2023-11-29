@@ -21,11 +21,14 @@ class Notifications extends StatefulWidget {
 class _NotificationsState extends State<Notifications> {
   late Socket socket;
   String token = "";
+  String prenom = "";
 
   void getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? tokenU = prefs.getString('uuid');
+    String? prenomU = prefs.getString('prenom');
     token = tokenU!;
+    prenom = prenomU!;
     print(token);
   }
 
@@ -72,6 +75,19 @@ class _NotificationsState extends State<Notifications> {
     socket.disconnect();
   }
 
+  Future<Card> askLoc() async {
+    var nom = "";
+    var token = "";
+    socket.on(token, (data) {
+      token = data.split(" ")[0];
+      nom = data.split(" ")[1];
+    });
+    var location = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    while (nom == "" && token == "") {}
+    return newFriendLocCard(nom, location, token);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,16 +96,17 @@ class _NotificationsState extends State<Notifications> {
         title: const Text('Notifications'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            newFriendLocCard("test"),
-            newFriendReqCard("test"),
-            ElevatedButton(
-                onPressed: setSocket, child: const Text("Connexion")),
-            ElevatedButton(onPressed: sendTest, child: const Text("test")),
-            ElevatedButton(onPressed: deco, child: const Text("Deconnexion")),
-          ],
+        child: FutureBuilder<Card>(
+          future: askLoc(),
+          builder: (BuildContext context, AsyncSnapshot<Card> snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data!;
+            } else if (snapshot.hasError) {
+              return const Text('Error');
+            } else {
+              return const Text("Pas de notifications.");
+            }
+          },
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

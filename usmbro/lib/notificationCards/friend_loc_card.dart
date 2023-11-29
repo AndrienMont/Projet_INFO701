@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
-Card newFriendLocCard(String user) {
+Card newFriendLocCard(String user, Position loc, String token) {
+  Socket socket = io('http://192.168.33.22:8080', <String, dynamic>{
+    'transports': ['websocket'],
+    'autoConnect': false,
+    'forceNew': true,
+  });
+  socket.connect();
   String name = user.toUpperCase();
   return Card(
     child: Column(
@@ -20,7 +28,9 @@ Card newFriendLocCard(String user) {
             TextButton(
                 child: const Text("Accepter",
                     style: TextStyle(color: Colors.green)),
-                onPressed: () {}),
+                onPressed: () {
+                  socket.emit(token, "${loc.latitude} ${loc.longitude}");
+                }),
           ],
         ),
       ],

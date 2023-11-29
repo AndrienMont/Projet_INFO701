@@ -58,10 +58,11 @@ class _PostUsersState extends State<PostUsers> {
     super.dispose();
   }
 
-  void _storeUuid(String token) async {
+  void _storeUuid(String token, String pren) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       prefs.setString('uuid', token);
+      prefs.setString('prenom', pren);
     });
   }
 
@@ -78,7 +79,7 @@ class _PostUsersState extends State<PostUsers> {
           filiere: filiere.toUpperCase(),
           token: token)),
     );
-    _storeUuid(token);
+    _storeUuid(token, prenom);
     if (response.statusCode == 201) {
       // If the server did return a 201 CREATED response,
       // then parse the JSON.

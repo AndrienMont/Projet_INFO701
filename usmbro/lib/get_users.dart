@@ -27,11 +27,14 @@ class _GetUsers extends State<GetUsers> {
   late SharedPreferences _prefs;
   List<User> usersList = [];
   late Socket socket;
+  String token = "";
+  String prenom = "";
 
   @override
   void initState() {
     super.initState();
     _loadUserStatus();
+    getToken();
     setSocket();
   }
 
@@ -57,7 +60,7 @@ class _GetUsers extends State<GetUsers> {
 
   Future<void> getUsers() async {
     final response =
-        await http.get(Uri.parse("http://10.7.148.83:3000/api/users"));
+        await http.get(Uri.parse("http://192.168.33.22:3000/api/users"));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -90,16 +93,26 @@ class _GetUsers extends State<GetUsers> {
     }
   }
 
-  void reqLoc(String tokenSen, String tokenRec) {
+  void getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? tokenU = prefs.getString('uuid');
+    String? prenomU = prefs.getString('prenom');
+    token = tokenU!;
+    prenom = prenomU!;
+    print(token);
+  }
+
+  Future<GeoPoint> reqLoc(
+      String tokenSen, String tokenRec, String prenSen) async {
     var lat = "";
     var long = "";
-    socket.emit('reqLoc', "$tokenSen $tokenRec");
+    socket.emit('reqLoc', "$tokenSen $tokenRec $prenSen");
     socket.on(tokenSen, (data) {
       lat = data.split(" ")[0];
       long = data.split(" ")[1];
-      return GeoPoint(
-          latitude: double.parse(lat), longitude: double.parse(long));
     });
+    while (lat == "" && long == "") {}
+    return GeoPoint(latitude: double.parse(lat), longitude: double.parse(long));
   }
 
   @override
@@ -115,7 +128,7 @@ class _GetUsers extends State<GetUsers> {
           children: <Widget>[
             ElevatedButton(
                 onPressed: () {
-                  //getUsers();
+                  getUsers();
                   print(controlMap().initPosition.toString());
                 },
                 child: const Text("Récupérer la liste des utilisateurs")),
@@ -174,7 +187,9 @@ class _GetUsers extends State<GetUsers> {
                                       ? Colors.red
                                       : Colors.grey,
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  reqLoc(token, user.token, prenom);
+                                },
                               ),
                             ],
                           ),
