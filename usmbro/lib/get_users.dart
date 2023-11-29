@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
@@ -102,7 +103,7 @@ class _GetUsers extends State<GetUsers> {
     print(token);
   }
 
-  Future<GeoPoint> reqLoc(
+  Future<GeoPoint?> reqLoc(
       String tokenSen, String tokenRec, String prenSen) async {
     var lat = "";
     var long = "";
@@ -110,9 +111,12 @@ class _GetUsers extends State<GetUsers> {
     socket.on(tokenSen, (data) {
       lat = data.split(" ")[0];
       long = data.split(" ")[1];
+      return GeoPoint(
+          latitude: double.parse(lat), longitude: double.parse(long));
     });
-    while (lat == "" && long == "") {}
-    return GeoPoint(latitude: double.parse(lat), longitude: double.parse(long));
+    Timer(const Duration(seconds: 30), () {
+      return;
+    });
   }
 
   @override
