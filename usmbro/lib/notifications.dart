@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usmbro/get_users.dart';
 import 'package:usmbro/map.dart';
@@ -75,17 +77,20 @@ class _NotificationsState extends State<Notifications> {
     socket.disconnect();
   }
 
-  Future<Card> askLoc() async {
+  Future<Card?> askLoc() async {
     var nom = "";
     var token = "";
+    var location = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     socket.on(token, (data) {
       token = data.split(" ")[0];
       nom = data.split(" ")[1];
+      return newFriendLocCard(nom, location, token);
     });
-    var location = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    while (nom == "" && token == "") {}
-    return newFriendLocCard(nom, location, token);
+
+    Timer(const Duration(seconds: 30), () {
+      return;
+    });
   }
 
   @override
@@ -96,9 +101,9 @@ class _NotificationsState extends State<Notifications> {
         title: const Text('Notifications'),
       ),
       body: Center(
-        child: FutureBuilder<Card>(
+        child: FutureBuilder<Card?>(
           future: askLoc(),
-          builder: (BuildContext context, AsyncSnapshot<Card> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<Card?> snapshot) {
             if (snapshot.hasData) {
               return snapshot.data!;
             } else if (snapshot.hasError) {
