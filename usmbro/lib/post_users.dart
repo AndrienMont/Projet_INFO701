@@ -66,13 +66,6 @@ class _PostUsersState extends State<PostUsers> {
     });
   }
 
-  // void _userAdded(bool add) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     prefs.setBool('userAdded', add);
-  //   });
-  // }
-
   Future<void> createUser(String nom, String prenom, String filiere) async {
     String token = const Uuid().v4();
     final response = await http.post(
@@ -160,7 +153,6 @@ class _PostUsersState extends State<PostUsers> {
                                 _controllerPrenom.text,
                                 _controllerFiliere.text);
                           });
-                          // _userAdded(true);
                         },
                         child: const Text("Send to server")),
                   ],
