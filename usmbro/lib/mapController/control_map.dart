@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-OSMFlutter afficheMap() {
+OSMFlutter afficheMap(MapController mapController) {
   return OSMFlutter(
-      controller: controlMap(),
+      controller: mapController,
       osmOption: OSMOption(
         userTrackingOption: const UserTrackingOption(
           enableTracking: true,
@@ -30,6 +31,7 @@ OSMFlutter afficheMap() {
             ),
           ),
         ),
+        
         roadConfiguration: const RoadOption(
           roadColor: Colors.yellowAccent,
         ),
@@ -53,6 +55,24 @@ MapController controlMap() {
       north: 47.8084648,
       south: 45.817995,
       west: 5.9559113,
+    ),
+  );
+}
+
+Future roadInfo(MapController mapController) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var lat = prefs.getDouble('lat') as double;
+  var long = prefs.getDouble('long') as double;
+
+  return await mapController.drawRoad( 
+   await mapController.myLocation(),
+   GeoPoint(latitude: lat, longitude: long),
+   roadType: RoadType.car,
+   intersectPoint : [ ],
+   roadOption: const RoadOption(
+       roadWidth: 10,
+       roadColor: Colors.blue,
+       zoomInto: true,
     ),
   );
 }

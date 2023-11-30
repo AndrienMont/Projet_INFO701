@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:usmbro/get_users.dart';
 import 'package:usmbro/mapController/control_map.dart';
 import 'package:usmbro/notifications.dart';
@@ -15,6 +16,9 @@ class MapUsers extends StatefulWidget {
 }
 
 class _MapUsersState extends State<MapUsers> {
+  //Initialisation de la map
+  late MapController mapController = controlMap();
+
   @override
   Widget build(BuildContext context) {
     // return Scaffold(
@@ -28,10 +32,18 @@ class _MapUsersState extends State<MapUsers> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: SizedBox(
-          width: const SizedBox.expand().width,
-          height: const SizedBox.expand().height,
-          child: afficheMap()),
+      body: Column(
+        children: [
+          Expanded(child: afficheMap(mapController)),
+          ElevatedButton(
+            onPressed: () async {
+              // Appel de la fonction pour tracer la route
+              await roadInfo(mapController);
+            },
+            child: Text('Tracer la route'),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         // backgroundColor: Colors.black,
         onTap: (id) {
