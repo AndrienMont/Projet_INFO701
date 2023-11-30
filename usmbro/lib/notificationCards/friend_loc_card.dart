@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-Card newFriendLocCard(String user, Position loc, String token) {
+Card newFriendLocCard(String user, String token, Position loc) {
   Socket socket = io('http://192.168.159.22:8080', <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': false,
@@ -30,6 +30,7 @@ Card newFriendLocCard(String user, Position loc, String token) {
                     style: TextStyle(color: Colors.green)),
                 onPressed: () {
                   socket.emit(token, "${loc.latitude} ${loc.longitude}");
+                  // callback();
                 }),
           ],
         ),

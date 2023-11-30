@@ -24,6 +24,7 @@ class _NotificationsState extends State<Notifications> {
   late Socket socket;
   String token = "";
   String prenom = "";
+  bool cardVisible = true;
 
   void getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,6 +48,7 @@ class _NotificationsState extends State<Notifications> {
     getLoc();
     getToken();
     setSocket();
+    print("hello " + socket.connected.toString());
   }
 
   void setSocket() {
@@ -67,6 +69,7 @@ class _NotificationsState extends State<Notifications> {
 
   void sendTest() {
     socket.emit('salut', 'c\' est un test');
+    socket.on("salut", (message) => print(message));
   }
 
   void deco() {
@@ -77,29 +80,37 @@ class _NotificationsState extends State<Notifications> {
     print("here");
     var nom = "";
     var tokenU = "";
-
-    socket = io('http://192.168.159.22:8080', <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'forceNew': true,
-    });
-    socket.connect();
+    // while (!socket.connected) {
+    //   print("connecting");
+    //   socket.connect();
+    // }
     print(socket.connected);
     var location = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     print(token);
     print(socket.connected);
-    socket.on("salut", (data) {
+    socket.on("test", (data) {
       print("here");
       tokenU = data.split(" ")[0];
       print(tokenU);
       nom = data.split(" ")[1];
       print(nom);
-      return newFriendLocCard(nom, location, tokenU);
+      setState(() {
+        prefs.setString("lat", location.latitude.toString());
+        prefs.setString("long", location.longitude.toString());
+      });
+      return newFriendLocCard(nom, tokenU, location);
     });
 
     Timer(const Duration(seconds: 30), () {
       print("finito");
+    });
+  }
+
+  void _removeCard() {
+    setState(() {
+      cardVisible = false;
     });
   }
 
@@ -128,6 +139,21 @@ class _NotificationsState extends State<Notifications> {
           },
         ),
       ),
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: [
+      //       cardVisible
+      //           ? newFriendLocCard("Emilien", "test", _removeCard)
+      //           : Container(),
+      //       // newFriendReqCard("test"),
+      //       // ElevatedButton(
+      //       //     onPressed: setSocket, child: const Text("Connexion")),
+      //       // ElevatedButton(onPressed: sendTest, child: const Text("test")),
+      //       // ElevatedButton(onPressed: deco, child: const Text("Deconnexion")),
+      //     ],
+      //   ),
+      // ),
+
       bottomNavigationBar: BottomNavigationBar(
         // backgroundColor: Colors.black,
         onTap: (id) {
